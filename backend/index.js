@@ -1,14 +1,38 @@
 require('dotenv').config();
 const TwitchClient = require('./utils/TwitchClient');
+const SettingsIO = require('./utils/SettingsIO');
+
+// console.clear();
 
 const myClient = new TwitchClient();
 
 // I check for a file.
 // If that file exists, I grab it, and put it into the client
-myClient.setSettings({
-  channels: [
-    'magicmiko2'
-  ]
+SettingsIO.checkForFolder();
+// const settings = SettingsIO.getSettings(myClient.FILE_NAME);
+
+const settingFiles = [
+  {
+    file : myClient.FILE_NAME,
+    set : (settings) => { myClient.setSettings(settings) },
+    defaults : myClient.settings
+  }
+];
+const allSettingPromises = settingFiles.map((settings) => SettingsIO.getSettings(settings.file));
+
+Promise.all(allSettingPromises).then((values) => {
+  values.forEach((settings, i) => {
+    const sFile = settingFiles[i];
+    if (!settings) {
+      // write default settings
+      SettingsIO.writeFileSettings(sFile.file, sFile.defaults);
+    } 
+    else {
+      // grab them
+      sFile.set(settings);
+    }
+  });
+  finalizeConnections();
 });
 
 // If the file doesn't exist, I create the file
@@ -16,7 +40,13 @@ myClient.setSettings({
 // and put them into the new file
 // Then I can Throw an error, stating the file location and the need for it to be filled out
 
-myClient.createConnection();
+// console.log(myClient.settings);
+
+// 
+
+const finalizeConnections = () => {
+  myClient.createConnection();
+};
 
 
 

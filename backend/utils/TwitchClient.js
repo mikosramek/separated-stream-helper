@@ -2,13 +2,14 @@ const tmi = require('tmi.js');
 
 class TwitchClient {
   constructor() {
+    this.FILE_NAME = 'twitch-client-settings.json'
     this.settings = {
       identity: {
         username: process.env.BOT_USERNAME,
         password: process.env.OAUTH_TOKEN
       },
       channels: [
-        ''
+        'magicmiko2'
       ],
       options : {
         use_Music : false
@@ -20,9 +21,8 @@ class TwitchClient {
     return this.settings;
   }
 
-  setSettings (settings) {
+  setSettings(settings) {
     this.settings = {
-      ...this.settings,
       ...settings
     };
   }
@@ -37,7 +37,6 @@ class TwitchClient {
   }
 
   onConnectedHandler (addr, port) {
-    console.clear();
     console.log(`* connected to ${addr}:${port}`);
     console.log(`* ${this.settings.identity.username} running with these options:`);
     for (const [key, value] of Object.entries(this.settings.options)) {
