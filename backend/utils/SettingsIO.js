@@ -5,6 +5,34 @@ const BASE_FOLDER = path.join(require('os').homedir() + '/.ca.mikosramek.stream-
 
 class SettingsIO {
 
+  setupSettings(settingsMap, callback) {
+    this.checkForFolder();
+    this.settings = settingsMap;
+
+    const allSettingPromises = settingsMap.map((settings) => this.getSettings(settings.file));
+    Promise.all(allSettingPromises).then((values) => {
+      values.forEach((settings, i) => {
+        const sFile = settingsMap[i];
+        if (!settings) {
+          // write default settings
+          this.writeFileSettings(sFile.file, sFile.defaults);
+        } 
+        else {
+          // grab them
+          sFile.set(settings);
+        }
+      });
+      callback();
+    });
+  }
+
+  updateSettings(filename, content) {
+    const settingsExist = this.checkForFile(filename);
+    if (settingsExist) {
+      this.writeFileSettings(filename, content);
+    }
+  }
+
   async getSettings(filename) {
     const settingsExist = this.checkForFile(filename);
     if (settingsExist) {
