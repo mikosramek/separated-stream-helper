@@ -86,7 +86,7 @@ class TwitchClient {
     EventBus.$emit(EVENTS.TWITCH_MESSAGE, { msg, context });
     if (self) { return; } // Ignore messages from the bot
     //Ignore messages from non-broadcasters / moderators
-    if(context.badges !== null && !context.badges.broadcaster && !context.badges.moderator) { return; }
+    if(context.badges === null && !context.badges.broadcaster && !context.badges.moderator) { return; }
     // Remove whitespace from chat message
     const commandParts = msg.split(' ');
     //grab the command

@@ -1,15 +1,20 @@
 <template>
   <div id="app">
     <h1>Stream Helper</h1>
+    <ChatBox />
   </div>
 </template>
 
 <script>
+import ChatBox from './components/ChatBox';
 
 export default {
   name: 'App',
   components: {
-    
+    ChatBox
+  },
+  created() {
+    this.$socket.init();
   }
 }
 </script>
