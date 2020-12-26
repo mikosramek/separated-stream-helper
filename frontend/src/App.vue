@@ -1,31 +1,31 @@
 <template>
   <div id="app">
-    <h1>Stream Helper</h1>
-    <ChatBox />
+    <router-view/>
   </div>
 </template>
 
 <script>
-import ChatBox from './components/ChatBox';
+import './styles/index.scss';
 
 export default {
   name: 'App',
-  components: {
-    ChatBox
-  },
   created() {
     this.$socket.init();
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style lang="scss">
+#nav {
+  padding: 30px;
+
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+
+    &.router-link-exact-active {
+      color: #42b983;
+    }
+  }
 }
 </style>

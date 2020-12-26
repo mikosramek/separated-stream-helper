@@ -11,6 +11,9 @@ class SocketIO {
     registerEvent = (event, callback) => {
         this.socket.on(event, callback);
     }
+    clearEvent = (event, callback) => {
+        this.socket.off(event, callback);
+    }
 }
 
 export default SocketIO;
