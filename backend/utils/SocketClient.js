@@ -23,19 +23,24 @@ class SocketClient {
         this.io.on('connection', (socket) => {
             socket.join('stream-helper');
             socket.emit('joined-room');
+            for (const [_key, value] of Object.entries(EVENTS.receiving)) {
+                socket.on(value, (data) => {
+                    EventBus.$emit(value, data);
+                })
+            }
         });
           
-        for (const [_key, value] of Object.entries(EVENTS)) {
-            this.registerEvent(value);
+        for (const [_key, value] of Object.entries(EVENTS.sending)) {
+            this.registerSendingEvent(value);
         }
 
         this.httpServer.listen({
-            host: 'localhost',
+            host: '0.0.0.0',
             port: '1337'
         });
     }
 
-    registerEvent = (event) => {
+    registerSendingEvent = (event) => {
         EventBus.$on(event, (...args) => {
             console.log('args', args, 'SocketClient@39');
             this.io.to('stream-helper').emit(event, args);

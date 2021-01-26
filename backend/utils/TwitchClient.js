@@ -70,20 +70,20 @@ class TwitchClient {
     }
     console.log('* Bot is active in these channels:');
     this.settings.channels.forEach(channel => { console.log(`** ${channel}`) });
-    EventBus.$emit(EVENTS.TWITCH_CONNECTED, true);
+    EventBus.$emit(EVENTS.sending.twitch_connected, true);
   }
   
   onCheerHandler ([ target, userstate ]) {
-    EventBus.$emit(EVENTS.TWITCH_BITS, { userstate });
+    EventBus.$emit(EVENTS.sending.twitch_bits, { userstate });
     this.client.say(target, `Thanks ${userstate.display-name} for the ${userstate.bits} bits!`);
   }
   
   onSubscriptionHandler ([ username ]) {
-    EventBus.$emit(EVENTS.TWITCH_SUB, { username });
+    EventBus.$emit(EVENTS.sending.twitch_sub, { username });
     this.client.say(target, `Thanks ${username} for the subscription!`);
   }
   onMessageHandler ([ target, context, msg, self ]) {
-    EventBus.$emit(EVENTS.TWITCH_MESSAGE, { msg, context });
+    EventBus.$emit(EVENTS.sending.twitch_message, { msg, context });
     if (self) { return; } // Ignore messages from the bot
     //Ignore messages from non-broadcasters / moderators
     if(context.badges === null && !context.badges.broadcaster && !context.badges.moderator) { return; }

@@ -2,10 +2,15 @@
 module.exports = {
   CHANNEL_NAME : 'magicmiko2',
   EVENTS : {
-    TWITCH_MESSAGE : 'twitch:message',
-    TWITCH_SUB : 'twitch:subscription',
-    TWITCH_RESUB : 'twitch:resubscription',
-    TWITCH_BITS : 'twitch:bits',
-    TWITCH_CONNECTED : 'twitch:connected'
+    receiving: {
+      code : 'barcode:code',
+    },
+    sending : {
+      twitch_message : 'twitch:message',
+      twitch_sub : 'twitch:subscription',
+      twitch_resub : 'twitch:resubscription',
+      twitch_bits : 'twitch:bits',
+      twitch_connected : 'twitch:connected',
+    }
   }
 }

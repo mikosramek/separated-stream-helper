@@ -3,5 +3,6 @@ export const EVENTS = {
     twitch_sub: 'twitch:subscription',
     twitch_resub: 'twitch:resubscription',
     twitch_bits: 'twitch:bits',
-    twitch_connected: 'twitch:connected'
+    twitch_connected: 'twitch:connected',
+    code : 'barcode:code'
 }

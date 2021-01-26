@@ -15,7 +15,7 @@ export default {
 <style lang='scss'>
 .Chat {
     position: relative;
-    background: rgba(black, 0.2);
+    background: rgba($highlight, 0.2);
     height: 100vh;
 }
 </style>

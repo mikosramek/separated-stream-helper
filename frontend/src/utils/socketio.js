@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 class SocketIO {
     init() {
         this.connected = false;
-        this.socket = io('localhost:1337');
+        this.socket = io('192.168.0.149:1337');
         this.socket.on('joined-room', () => {
             this.connected = true;
         });
@@ -13,6 +13,9 @@ class SocketIO {
     }
     clearEvent = (event, callback) => {
         this.socket.off(event, callback);
+    }
+    emitEventOnce = (event, data) => {
+        this.socket.emit(event, data);
     }
 }
 

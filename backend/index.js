@@ -2,6 +2,7 @@ require('dotenv').config();
 const TwitchClient = require('./utils/TwitchClient');
 const SettingsIO = require('./utils/SettingsIO');
 const SocketClient = require('./utils/SocketClient');
+const Barcode = require('./utils/Barcode');
 
 // console.clear();
 
@@ -22,6 +23,6 @@ const finalizeConnections = () => {
 
 SettingsIO.setupSettings(settingsMap, finalizeConnections);
 
-
 // const socketClient = 
 new SocketClient();
+new Barcode();
