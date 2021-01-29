@@ -33,6 +33,7 @@ Temporary Items
 log/
 *.log
 *.log*
+*.xspf
 
 # Node
 npm-debug.log
