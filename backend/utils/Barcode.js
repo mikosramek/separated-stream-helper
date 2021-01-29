@@ -1,7 +1,7 @@
 const axios = require('axios');
 const EventBus = require('./EventBus');
 const { EVENTS } = require('../settings');
-const PlaylistHelper = require('../data/musicIndex');
+const PlaylistHelper = require('./PlaylistHelper');
 const FileOpener = require('./FileOpener');
 
 class Barcode {
