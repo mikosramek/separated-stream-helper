@@ -27,23 +27,28 @@ class Barcode {
     }
     codeHandler = async (code) => {
         console.log(`${code} has been scanned in!`);
-        const filePath = PlaylistHelper.getPlaylist(code);
         try {
-            if (this.playerHasStarted) {
-                await this.clearPlaylist();
-                await this.addPlaylist(filePath);
-            }
-            else {
-                this.playerHasStarted=true;
-                FileOpener.openFile(filePath);
+            const filePath = PlaylistHelper.getPlaylist(code);
+            try {
+                if (this.playerHasStarted) {
+                    await this.clearPlaylist();
+                    await this.addPlaylist(filePath);
+                }
+                else {
+                    this.playerHasStarted=true;
+                    FileOpener.openFile(filePath);
+                }
+            } catch (error) {
+                console.error(error.message);
+                if (error.code === 'ECONNREFUSED') {
+                    this.playerHasStarted=true;
+                    FileOpener.openFile(filePath);
+                }
             }
         } catch (error) {
             console.error(error.message);
-            if (error.code === 'ECONNREFUSED') {
-                this.playerHasStarted=true;
-                FileOpener.openFile(filePath);
-            }
         }
+
     }
 }
 

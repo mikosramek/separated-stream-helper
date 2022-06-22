@@ -16,9 +16,10 @@ class SocketClient {
             limit: '50mb',
         }));
 
-        this.io = socket(this.httpServer, { serveClient: false, cors: {
-            origin: '*',
-          } });
+        this.io = socket(
+            this.httpServer,
+            { serveClient: false, cors: { origin: '*' } }
+        );
 
         this.io.on('connection', (socket) => {
             socket.join('stream-helper');
