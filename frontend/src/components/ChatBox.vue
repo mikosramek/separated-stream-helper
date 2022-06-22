@@ -65,32 +65,14 @@ export default {
   },
   mounted() {
     this.$socket.registerEvent(EVENTS.twitch_message, this.handleMessage);
-    this.createDummyMessages();
+    // this.createDummyMessages();
   },
   beforeDestroy() {
-    this.$socket.clearEvent(EVENTS.twitch_message, this.handleMessage);
+      this.$socket.clearEvent(EVENTS.twitch_message, this.handleMessage);
   },
   methods : {
     createDummyMessages() {
-      for (let i = 0; i < 1; i++) {
-        // const ran = Math.floor(Math.random() * 10) + 1;
-        // this.handleMessage([{
-        //   msg : 'man now that is a PogChamp moment man now that is a PogChamp moment', //.repeat(ran),
-        //   context : {
-        //     color : '#ff0000',
-        //     'display-name' : 'miko',
-        //     badges : {
-        //       broadcaster : 1,
-        //       moderator : 1
-        //     },
-        //     emotes : {
-        //       305574557 : [
-        //         "18-25",
-        //         "52-59"
-        //       ]
-        //     }
-        //   }
-        // }]);
+      for (let i = 0; i < 10; i++) {
         this.handleMessage([{
           msg : 'PogChamp HahaCat PogChamp', //.repeat(ran),
           context : {
@@ -161,9 +143,8 @@ export default {
         ...message,
         msg
       });
-      // this.$refs.chatbox.scrollIntoView();
-      // const { messages } = this.$refs;
-      // messages[messages.length - 1].scrollIntoView();
+      const { chatbox } = this.$refs;
+      chatbox.scrollTop = chatbox.scrollHeight;
     }
   }
 }
@@ -188,7 +169,7 @@ export default {
       background: rgba($base, 0.3);
       font-family: $font-sans-serif;
       &:nth-of-type(2n) {
-        background: rgba($base, 0.4);
+        background: rgba($white, 0.6);
       }
     }
     &-name {
