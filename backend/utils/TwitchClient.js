@@ -36,7 +36,9 @@ class TwitchClient {
     this.commandMap = {
       add: 'addCommand',
       say: 'say',
-      alert: 'say'
+      alert: 'say',
+      update: 'updateCommand',
+      delete: 'deleteCommand'
     }
   }
 
@@ -51,7 +53,6 @@ class TwitchClient {
   }
 
   saveSettings() {
-    console.log({SETTINGS_FILE_NAME})
     SettingsIO.updateSettings(SETTINGS_FILE_NAME, this.settings);
   }
 
@@ -133,19 +134,44 @@ class TwitchClient {
     }
   }
 
+  get commandKey() {
+    return this.settings.options.commandKey
+  }
 
   // ~add
   addCommand(newCommand, rest) {
     const message = rest.join(' ');
     const { commands } = this.settings.options;
-    if (!newCommand || !message) return `${this.settings.options.commandKey}add requires a name + message`
-    if (commands[newCommand]) return 'Command already exists!';
+    if (!newCommand || !message) return `${this.commandKey}add requires a name + message`;
+    if (commands[newCommand]) return `Command already exists! Try ${this.commandKey}update instead`;
     commands[newCommand] = {
       msg : message
     };
     if (/%c/g.test(message)) commands[newCommand].count = 0;
     this.saveSettings();
-    return `New command '${newCommand}' added!`
+    return `${this.commandKey}${newCommand} added!`;
+  }
+
+
+  // ~update
+  updateCommand(commandToUpdate, rest) {
+    const message = rest.join(' ');
+    const { commands } = this.settings.options;
+    if (!commandToUpdate || !message) return `${this.commandKey}add requires a name + message`;
+    if (!commands[commandToUpdate]) return `${this.commandKey}${commandToUpdate} doesn't exist`;
+    commands[commandToUpdate].msg = message;
+    this.saveSettings();
+    return `${this.commandKey}${commandToUpdate} updated!`;
+  }
+
+  // ~delete
+  deleteCommand(commandToDelete) {
+    const { commands } = this.settings.options;
+    if (!commandToDelete) return `${this.commandKey}delete requires a command name`;
+    if (!commands[commandToDelete]) return `${this.commandKey}${commandToDelete} doesn't exist`;
+    delete commands[commandToDelete];
+    this.saveSettings();
+    return `${this.commandKey}${commandToDelete} removed`
   }
 
   // ~say ~alert
