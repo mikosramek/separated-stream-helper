@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 class SocketIO {
     init() {
         this.connected = false;
-        this.socket = io('192.168.0.149:1337');
+        this.socket = io(process.env.VUE_APP_BACKEND_SERVER);
         this.socket.on('joined-room', () => {
             this.connected = true;
         });
