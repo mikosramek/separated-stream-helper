@@ -1,29 +1,60 @@
 <template>
   <div class='Home'>
     <!-- body -->
-    <router-link to="/code" class="Home__link">Code</router-link>
-    <router-link to="/chat" class="Home__link">Chat</router-link>
+    <nav class="Home__nav">
+      <router-link to="/code" class="Home__link">Code</router-link>
+      <router-link to="/chat" class="Home__link">Chat</router-link>
+    </nav>
+    <main class="Home__dashboard">
+      <div class="Home__chat">
+        <ChatBox />
+      </div>
+    </main>
   </div>
 </template>
 
 <script>
+import ChatBox from '../components/ChatBox.vue';
 export default {
-  name: 'Home',
+    name: "Home",
+    components: { ChatBox }
 }
 </script>
 
 <style lang='scss'>
 .Home {
   position: relative;
-  display: flex;
-  justify-content: space-evenly;
   width: 100vw;
+  height: 100vh;
   background: $highlight;
+  display: flex;
+  flex-direction: column;
+  &__nav {
+    display: flex;
+    justify-content: space-evenly;
+  }
   &__link {
     font-family: $font-sans-serif;
     color: $white;
     font-size: 24px;
-    padding: 25px 0;
+    padding: 10px;
+    flex-grow: 1;
+    margin: 2px;
+    border: 2px solid $white;
+    text-align: center;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  &__dashboard {
+    flex-grow: 1;
+    display: flex;
+  }
+  &__chat {
+    width: 25%;
+    border: 2px solid $white;
+    background: rgba($base, 0.5);
+    margin: 2px;
   }
 }
 </style>
