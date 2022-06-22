@@ -8,6 +8,7 @@ const { EVENTS } = require('../settings');
 
 class SocketClient {
     constructor() {
+        // setup express app with socketio listening on it
         this.expressApp = express();
         this.httpServer = http.createServer(this.expressApp);
         this.expressApp.use(bodyParser.json({ limit: '50mb' }));
@@ -30,7 +31,8 @@ class SocketClient {
                 })
             }
         });
-          
+        
+        // register events that we'll want to send to our socket server
         for (const [_key, value] of Object.entries(EVENTS.sending)) {
             this.registerSendingEvent(value);
         }
@@ -43,7 +45,6 @@ class SocketClient {
 
     registerSendingEvent = (event) => {
         EventBus.$on(event, (...args) => {
-            console.log('args', args, 'SocketClient@39');
             this.io.to('stream-helper').emit(event, args);
         });
     }

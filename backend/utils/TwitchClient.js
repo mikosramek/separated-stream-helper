@@ -4,32 +4,39 @@ const TTS = require('./TextToSpeech');
 const { EVENTS } = require('../settings');
 const SettingsIO = require('./SettingsIO');
 
+const SETTINGS_FILE_NAME = 'twitch-client-settings.json'
+
 class TwitchClient {
   constructor() {
-    this.FILE_NAME = 'twitch-client-settings.json'
+    // auth for client
     this.identity = {
       username: process.env.BOT_USERNAME,
       password: process.env.OAUTH_TOKEN
     }
+    // base settings object
     this.settings = {
       channels: [],
-      options : {
-        use_Music : false
+      options: {
+        use_Music: false
       },
-      commandKey : '~',
-      commands : {}
+      commandKey: '~',
+      commands: {}
     }
 
+    // key: event from twitch
+    // value: class function to handle event
     this.messageMap = {
-      connected : 'onConnectedHandler',
-      message : 'onMessageHandler',
-      subscription : 'onSubscriptionHandler'
+      connected: (args) => this.onConnectedHandler(args),
+      message: (args) => this.onMessageHandler(args),
+      subscription: (args) => this.onSubscriptionHandler(args)
     };
 
+    // key: command from chat, ie ~add
+    // value: class function to handle command
     this.commandMap = {
-      add : 'addCommand',
-      say : 'say',
-      alert : 'say'
+      add: 'addCommand',
+      say: 'say',
+      alert: 'say'
     }
   }
 
@@ -44,18 +51,19 @@ class TwitchClient {
   }
 
   saveSettings() {
-    SettingsIO.updateSettings(this.FILE_NAME, this.settings);
+    console.log({SETTINGS_FILE_NAME})
+    SettingsIO.updateSettings(SETTINGS_FILE_NAME, this.settings);
   }
 
   createConnection () {
     this.client = new tmi.client({
-      identity : this.identity,
-      channels : this.settings.channels
+      identity: this.identity,
+      channels: this.settings.channels
     });
 
     for (let [message, handler] of Object.entries(this.messageMap)) {
       this.client.on(message, (...args) => {
-        this[handler](args);
+        handler(args);
       });
     }
 
@@ -92,38 +100,45 @@ class TwitchClient {
     //grab the command
     const commandName = commandParts[0].toLowerCase();
     
+    // validate the commandkey (ie ~ or !)
     if(commandName[0] !== this.settings.options.commandKey) return;
 
+    // get the rest of the command
     const commandSlug = commandName.slice(1);
     
+    // see if the command is a premade one (ie ~add) this will be a function
     const command = this.commandMap[commandSlug];
 
     if (command) {
+      // call the function passing in the rest of the command parts
       const response = this[command](commandParts[1], commandParts.slice(2));
       if (!response) return;
       this.client.say(target, response);
     }
     else {
+      // if it isn't a predefined command, look to see if we have it as a custom added one
       const customCommand = this.settings.options.commands[commandSlug];
       if (customCommand) {
         let message = customCommand.msg;
         console.log('customCommand', customCommand, 'TwitchClient@107');
+        if (!message) return;
+        // if the command has a variable count (%c) add one to it and insert it into the message
         if (customCommand.count !== undefined) {
           customCommand.count += 1;
           message = message.replace(/%c/g, customCommand.count);
           this.saveSettings();
         }
-        if (!message) return;
         this.client.say(target, message);
       }
     }
   }
 
 
-  // ~add docs Go here to access my docs: https://www.notion.so/hamgames/Separated-Stream-Help-9502d9e9baad47e6b3eebb640031d183
+  // ~add
   addCommand(newCommand, rest) {
     const message = rest.join(' ');
     const { commands } = this.settings.options;
+    if (!newCommand || !message) return `${this.settings.options.commandKey}add requires a name + message`
     if (commands[newCommand]) return 'Command already exists!';
     commands[newCommand] = {
       msg : message
@@ -133,6 +148,7 @@ class TwitchClient {
     return `New command '${newCommand}' added!`
   }
 
+  // ~say ~alert
   say(text, rest) {
     const words = `${text} ${rest.join(' ')}`
     TTS.say(words);
@@ -140,4 +156,7 @@ class TwitchClient {
 
 }
 
-module.exports = TwitchClient;
+module.exports = {
+  TwitchClient,
+  SETTINGS_FILE_NAME
+};

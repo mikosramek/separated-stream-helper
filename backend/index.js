@@ -1,5 +1,5 @@
 require('dotenv').config();
-const TwitchClient = require('./utils/TwitchClient');
+const { TwitchClient, SETTINGS_FILE_NAME } = require('./utils/TwitchClient');
 const SettingsIO = require('./utils/SettingsIO');
 const SocketClient = require('./utils/SocketClient');
 const Barcode = require('./utils/Barcode');
@@ -10,7 +10,7 @@ const myClient = new TwitchClient();
 
 const settingsMap = [
   {
-    file : myClient.FILE_NAME,
+    file : SETTINGS_FILE_NAME,
     set : (settingsFromFile) => { myClient.setSettings(settingsFromFile) },
     defaults : myClient.settings
   }
