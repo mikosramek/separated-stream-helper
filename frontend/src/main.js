@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import App from './App.vue';
 import socket from './plugins/socket';
+import musicHandler from './plugins/musicHandler';
 import router from './router';
 
 import VueSanitize from "vue-sanitize";
@@ -19,6 +20,7 @@ Vue.use(VueSanitize, defaultOptions);
 
 Vue.config.productionTip = false
 Vue.use(socket);
+Vue.use(musicHandler);
 
 new Vue({
   router,

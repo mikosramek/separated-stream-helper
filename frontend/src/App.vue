@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view v-if="connected"/>
+    <!-- could do a v-else loading state? -->
   </div>
 </template>
 
@@ -9,9 +10,20 @@ import './styles/index.scss';
 
 export default {
   name: 'App',
+  data() {
+    return {
+      connected: true
+    }
+  },
   created() {
-    this.$socket.init();
-  }
+    this.$socket.init(() => {
+      this.$music.init();
+      // this.connected = true;
+    });
+  },
+  beforeDestroy() {
+    this.$music.destroy();
+  },
 }
 </script>
 
