@@ -9,15 +9,21 @@
       <div class="Home__chat">
         <ChatBox />
       </div>
+      <section>
+        <div class="Home__song">
+          <CurrentMusic />
+        </div>
+      </section>
     </main>
   </div>
 </template>
 
 <script>
 import ChatBox from '../components/ChatBox.vue';
+import CurrentMusic from '../components/CurrentMusic.vue';
 export default {
     name: "Home",
-    components: { ChatBox }
+    components: { ChatBox, CurrentMusic }
 }
 </script>
 
@@ -55,6 +61,12 @@ export default {
     border: 2px solid $white;
     background: rgba($base, 0.5);
     margin: 2px;
+  }
+  &__song {
+    border: 2px solid $white;
+    background: rgba($base, 0.2);
+    margin: 2px;
+    padding: 25px;
   }
 }
 </style>
