@@ -11,7 +11,8 @@
       </div>
       <section>
         <div class="Home__song">
-          <CurrentMusic />
+          <CurrentMusic linebreak />
+          <MusicControls />
         </div>
       </section>
     </main>
@@ -21,9 +22,10 @@
 <script>
 import ChatBox from '../components/ChatBox.vue';
 import CurrentMusic from '../components/CurrentMusic.vue';
+import MusicControls from '../components/MusicControls.vue';
 export default {
     name: "Home",
-    components: { ChatBox, CurrentMusic }
+    components: { ChatBox, CurrentMusic, MusicControls }
 }
 </script>
 

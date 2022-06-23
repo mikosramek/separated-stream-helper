@@ -1,31 +1,36 @@
 <template>
-    <p class="CurrentMusic__info">{{ currentMusic }}</p>
+    <p class="CurrentMusic__info" v-html="parsedSongName" />
 </template>
 <script>
-import { EVENTS } from '../../settings';
 export default {
+    props: {
+        linebreak: {
+            type: Boolean,
+            default: false
+        }
+    },
     data() {
         return {
-            currentMusic: ''
+            currentMusic: '- | - | -'
+        }
+    },
+    computed: {
+        parsedSongName() {
+            if (this.currentMusic.length < 70 || !this.linebreak) return this.currentMusic
+            return this.currentMusic.replace(/\|/gi, '<br />')
         }
     },
     mounted() {
-        this.$socket.registerEvent(EVENTS.music_current_response, this.handleMusicResponse);
-        this.$socket.emitEventOnce(EVENTS.music_current_request_forced);
-        this.pollInterval = setInterval(this.pollBackEnd, 5000);
+        this.destroyListener = this.$music.registerInfoCallback(this.handleMusicResponse);
+        this.$music.pollBackEnd(true);
     },
     beforeDestroy() {
-        this.$socket.clearEvent(EVENTS.music_current_response, this.handleMusicResponse);
-        if (this.pollInterval) clearInterval(this.pollInterval)
+        this.destroyListener();
     },
     methods: {
-        handleMusicResponse([ currentMusic ]) {
-            this.currentMusic = currentMusic;
+        handleMusicResponse([ { currentlyPlaying } ]) {
+            this.currentMusic = currentlyPlaying;
         },
-        pollBackEnd() {
-            console.log('polling...')
-            this.$socket.emitEventOnce(EVENTS.music_current_request);
-        }
     },
 }
 </script>
