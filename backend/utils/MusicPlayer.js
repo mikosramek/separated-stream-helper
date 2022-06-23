@@ -23,18 +23,19 @@ function sendCommand(command) {
 class CurrentMusicHandler {
     constructor() {
         this.currentTrack = null
-        Event.$on(EVENTS.receiving.music_current, this.pollForSong)
+        EventBus.$on(EVENTS.receiving.music_current, this.pollForSong)
+        EventBus.$on(EVENTS.receiving.music_current_forced, () => this.pollForSong(true))
     }
-    pollForSong = async() => {
+    pollForSong = async(forceResponse = false) => {
         try {
             const response = await sendCommand('')
             const xml = parser.parse(response.data)
             const songInfo =_get(xml, 'root.information.category[0].info', [])
-            const songTitle = _get(songInfo, '[5]', 'unknown');
+            const songAlbum = _get(songInfo, '[5]', 'unknown');
             const songArtist = _get(songInfo, '[8]', 'unknown');
-            const songAlbum = _get(songInfo, '[7]', 'unknown');
+            const songTitle = _get(songInfo, '[7]', 'unknown');
             const infoString = `${songTitle} | ${songArtist} | ${songAlbum}`
-            if (this.currentTrack !== infoString) {
+            if (this.currentTrack !== infoString || forceResponse) {
                 this.currentTrack = infoString
                 EventBus.$emit(EVENTS.sending.music_current, infoString)
             }

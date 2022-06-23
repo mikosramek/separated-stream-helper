@@ -4,7 +4,8 @@ module.exports = {
   EVENTS: {
     receiving: {
       code: 'barcode:code',
-      music_current: 'music:current-info-request'
+      music_current: 'music:current-info-request',
+      music_current_forced: 'music:current-info-request--force'
     },
     sending: {
       twitch_message: 'twitch:message',
