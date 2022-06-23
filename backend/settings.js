@@ -3,7 +3,7 @@ module.exports = {
   CHANNEL_NAME: 'magicmiko2',
   EVENTS: {
     receiving: {
-      code: 'barcode:code',
+      code: 'music:code',
       music_current: 'music:current-info-request',
       music_current_forced: 'music:current-info-request--force'
     },
