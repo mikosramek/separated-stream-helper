@@ -5,7 +5,8 @@ module.exports = {
     receiving: {
       code: 'music:code',
       music_current: 'music:current-info-request',
-      music_current_forced: 'music:current-info-request--force'
+      music_current_forced: 'music:current-info-request--force',
+      music_toggle_play: 'music:toggle-playback'
     },
     sending: {
       twitch_message: 'twitch:message',

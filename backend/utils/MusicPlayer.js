@@ -20,36 +20,54 @@ function sendCommand(command) {
     });
 }
 
-class CurrentMusicHandler {
-    constructor() {
-        this.currentTrack = null
-        EventBus.$on(EVENTS.receiving.music_current, this.pollForSong)
-        EventBus.$on(EVENTS.receiving.music_current_forced, () => this.pollForSong(true))
-    }
-    pollForSong = async(forceResponse = false) => {
-        try {
-            const response = await sendCommand('')
-            const xml = parser.parse(response.data)
-            const songInfo =_get(xml, 'root.information.category[0].info', [])
-            const songAlbum = _get(songInfo, '[5]', 'unknown');
-            const songArtist = _get(songInfo, '[8]', 'unknown');
-            const songTitle = _get(songInfo, '[7]', 'unknown');
-            const infoString = `${songTitle} | ${songArtist} | ${songAlbum}`
-            if (this.currentTrack !== infoString || forceResponse) {
-                this.currentTrack = infoString
-                EventBus.$emit(EVENTS.sending.music_current, infoString)
-            }
-        } catch (error) {
-            console.error(error)
-        }
-    }
-}
+const musicStateKeys = ['state', 'random', 'loop', 'repeat', 'time', 'length'];
 
 class MusicPlayer {
     constructor() {
-        EventBus.$on(EVENTS.receiving.code, this.codeHandler);
         this.playerHasStarted = true;
-        this.currentMusicHandler = new CurrentMusicHandler();
+        this.currentTrack = null;
+        this.oldState = {};
+        musicStateKeys.forEach((key) => {
+            this.oldState[key] = null;
+        })
+
+        EventBus.$on(EVENTS.receiving.code, this.codeHandler);
+        EventBus.$on(EVENTS.receiving.music_current, this.pollForSong)
+        EventBus.$on(EVENTS.receiving.music_current_forced, () => this.pollForSong(true))
+        EventBus.$on(EVENTS.receiving.music_toggle_play, this.togglePlaying)
+
+    }
+    emitPlayerStatus(response, forceResponse = false) {
+        const xml = parser.parse(response.data)
+        const songInfo =_get(xml, 'root.information.category[0].info', [])
+        const songAlbum = _get(songInfo, '[5]', '-');
+        const songArtist = _get(songInfo, '[8]', '-');
+        const songTitle = _get(songInfo, '[7]', '-');
+        const currentlyPlaying = `${songTitle} | ${songArtist} | ${songAlbum}`
+
+        
+        const updatedState = {};
+        let stateIsFresh = this.currentTrack !== currentlyPlaying;
+        musicStateKeys.forEach((key) => {
+            updatedState[key] = _get(xml, `root.${key}`, null);
+            if (updatedState[key] !== this.oldState[key]) {
+                stateIsFresh = true;
+                this.oldState[key] = updatedState[key]
+            }
+        })
+
+        if (stateIsFresh || forceResponse) {
+            this.currentTrack = currentlyPlaying
+            EventBus.$emit(EVENTS.sending.music_current, { currentlyPlaying, ...updatedState })
+        }
+    }
+    togglePlaying = async() => {
+        try {
+            const response = await sendCommand('pl_pause');
+            this.emitPlayerStatus(response, true);
+        } catch (error) {
+            console.error(error)
+        }
     }
     clearPlaylist() {
         return sendCommand('pl_empty');
@@ -80,7 +98,14 @@ class MusicPlayer {
         } catch (error) {
             console.error(error.message);
         }
-
+    }
+    pollForSong = async(forceResponse = false) => {
+        try {
+            const response = await sendCommand('');
+            this.emitPlayerStatus(response, forceResponse);
+        } catch (error) {
+            console.error(error)
+        }
     }
 }
 
