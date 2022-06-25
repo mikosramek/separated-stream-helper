@@ -22,6 +22,21 @@ function sendCommand(command) {
 
 const musicStateKeys = ['state', 'random', 'loop', 'repeat', 'time', 'length'];
 
+const findXMLInfoTagText = (string, name) => {
+    const regexString = `<info name='${name}'>`;
+    const exp = new RegExp(regexString, 'gi');
+    const endingExp = new RegExp('</info>', 'gi');
+    const infoTag = exp.exec(string);
+    const textStartIndex = infoTag.index + regexString.length;
+    if (!textStartIndex) return '';
+
+    let closingTagIndex = endingExp.exec(string).index;
+    while(closingTagIndex < textStartIndex) {
+        closingTagIndex = endingExp.exec(string).index;
+    }
+    return string.substring(textStartIndex, closingTagIndex);
+}
+
 class MusicPlayer {
     constructor() {
         this.playerHasStarted = true;
@@ -38,14 +53,16 @@ class MusicPlayer {
 
     }
     emitPlayerStatus(response, forceResponse = false) {
-        const xml = parser.parse(response.data)
-        const songInfo =_get(xml, 'root.information.category[0].info', [])
-        const songAlbum = _get(songInfo, '[5]', '-');
-        const songArtist = _get(songInfo, '[8]', '-');
-        const songTitle = _get(songInfo, '[7]', '-');
-        const currentlyPlaying = `${songTitle} | ${songArtist} | ${songAlbum}`
 
+        const rawXML = response.data;
+        const xml = parser.parse(rawXML)
+        const songAlbum = findXMLInfoTagText(rawXML, 'album') || '-';
+        const songArtist = findXMLInfoTagText(rawXML, 'artist') || '-';
+        const songTitle = findXMLInfoTagText(rawXML, 'title') || '-';
+        const currentlyPlaying = `${songTitle} | ${songArtist} | ${songAlbum}`
         
+        // const songArtwork = findXMLInfoTagText(rawXML, 'artwork_url') || '-';
+
         const updatedState = {};
         let stateIsFresh = this.currentTrack !== currentlyPlaying;
         musicStateKeys.forEach((key) => {
